@@ -28,6 +28,9 @@ namespace CodingInterviews
 
         /// <summary>
         /// 新颖解法：
+        /// 把一个整数减去1，再和原整数做与运算，会把该整数最右边一个1变成0。
+        /// 那么一个整数的二进制表示中有多少个1，就可以进行多少次这样的操作。
+        /// 很多二进制的处理都可以用这种方法。
         /// </summary>
         /// <param name="n"></param>
         /// <returns></returns>
@@ -39,7 +42,6 @@ namespace CodingInterviews
             }
             return count;
         }
-
 
     }
 }
