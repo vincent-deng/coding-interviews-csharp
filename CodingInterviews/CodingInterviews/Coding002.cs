@@ -8,6 +8,10 @@ namespace CodingInterviews
     /// <summary>
     /// 字符串替换空格
     /// 请实现一个函数，将一个字符串中的每个空格替换成“%20”。例如，当字符串为We Are Happy.则经过替换之后的字符串为We%20Are%20Happy。
+    /// 
+    /// 解题思路：
+    /// 字符串替换，主要的消耗是在移位上
+    /// 1. 遍历字符串，统计出空格数量；2. 再遍历一次，完成替换
     /// </summary>
     public class Coding002
     {

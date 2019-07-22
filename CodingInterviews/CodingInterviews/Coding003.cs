@@ -8,6 +8,9 @@ namespace CodingInterviews
     /// <summary>
     /// 链表:从尾到头打印链表
     /// 输入一个链表，按链表值从尾到头的顺序返回一个ArrayList。
+    /// 
+    /// 解题思路：
+    /// 输入一个链表，从尾到头输出，正常的遍历都是从头到尾输出，而这里需要从尾到头输出，那么就是“先进后出”，也就是栈的功能。
     /// </summary>
     public class Coding003
     {
