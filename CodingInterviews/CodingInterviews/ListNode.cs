@@ -43,5 +43,35 @@ namespace CodingInterviews
                 return next;
             }
         }
+
+        /// <summary>
+        /// 获取链表的值
+        /// </summary>
+        /// <param name="head"></param>
+        /// <returns></returns>
+        public static string GetListString(ListNode head)
+        {
+            if (head == null)
+            {
+                return null;
+            }
+
+            StringBuilder sbList = new StringBuilder();
+            while (head != null)
+            {
+                sbList.Append(head.item.ToString());
+                head = head.next;
+            }
+
+            return sbList.ToString();
+        }
+
+        /// <summary>
+        /// 获取链表的值
+        /// </summary>
+        /// <returns></returns>
+        public string GetListString() {
+            return GetListString(this);
+        }
     }
 }
