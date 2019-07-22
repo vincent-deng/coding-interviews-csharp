@@ -5,16 +5,6 @@ using System.Text;
 
 namespace CodingInterviews
 {
-    public class ListNode
-    {
-        public int item;
-        public ListNode next;
-        public ListNode(int x)
-        {
-            item = x;
-        }
-    }
-
     /// <summary>
     /// 链表:从尾到头打印链表
     /// 输入一个链表，按链表值从尾到头的顺序返回一个ArrayList。
@@ -61,34 +51,6 @@ namespace CodingInterviews
                     PrintForRecursion(node.next, list);
                 }
                 list.Add(node.item);
-            }
-        }
-
-        /// <summary>
-        /// 生成链表
-        /// </summary>
-        /// <param name="length"></param>
-        public static ListNode CreateNodeList(int length)
-        {
-            ListNode listNode = new ListNode(0);
-            var temp = listNode;
-            for (int i = 1; i < length; i++)
-            {
-                temp = nextList(temp, i);
-            }
-
-            return listNode;
-
-            //下一个
-            ListNode nextList(ListNode node, int value)
-            {
-                while (node.next != null)
-                {
-                    node = node.next;
-                }
-                var next = new ListNode(value);
-                node.next = next;
-                return next;
             }
         }
 

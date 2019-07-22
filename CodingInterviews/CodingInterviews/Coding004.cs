@@ -6,20 +6,6 @@ using System.Text;
 namespace CodingInterviews
 {
     /// <summary>
-    /// 二叉树
-    /// </summary>
-    public class TreeNode
-    {
-        public int val;
-        public TreeNode left;
-        public TreeNode right;
-        public TreeNode(int x)
-        {
-            val = x;
-        }
-    }
-
-    /// <summary>
     /// 树:重建二叉树
     /// 输入某二叉树的前序遍历和中序遍历的结果，请重建出该二叉树。
     /// 假设输入的前序遍历和中序遍历的结果中都不含重复的数字。

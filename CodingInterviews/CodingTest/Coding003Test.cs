@@ -12,7 +12,7 @@ namespace CodingTest
         [Fact]
         public void TestList()
         {
-            ListNode listNode = Coding003.CreateNodeList(10);
+            ListNode listNode = ListNode.CreateNodeList(10);
             List<int> test = Coding003.PrintForStack(listNode);
             for (int i = 0; i < 10; i++)
             {
@@ -29,7 +29,7 @@ namespace CodingTest
         [Fact]
         public void Test()
         {
-            ListNode listNode = Coding003.CreateNodeList(10);
+            ListNode listNode = ListNode.CreateNodeList(10);
             string o = JsonConvert.SerializeObject(listNode);
 
             List<int> test = Coding003.PrintForStack(listNode);
