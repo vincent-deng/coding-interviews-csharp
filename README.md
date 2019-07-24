@@ -2,88 +2,864 @@
 > 剑指Offer——名企面试官精讲典型编程题C#版  
 > 习题来源[牛客网](https://www.nowcoder.com/ta/coding-interviews?page=)
 
-
 # 剑指Offer
 001.数组 二维数组中的查找
 > 在一个二维数组中（每个一维数组的长度相同），每一行都按照从左到右递增的顺序排序，每一列都按照从上到下递增的顺序排序。请完成一个函数，输入这样的一个二维数组和一个整数，判断数组中是否含有该整数。
 >> 解题思路： 右上角解法，逐渐缩小范围
 
+<details>
+<summary>部分核心代码实现</summary>
+<p>
+
+```c#
+/// <summary>
+/// 右上角解题
+/// </summary>
+/// <param name="array"></param>
+/// <param name="target"></param>
+/// <returns></returns>
+public static bool FindForRight(int[,] array, int target)
+{
+    bool result = false;
+
+    if (CheckIsArrayRange(array, target))
+    {
+        int rowLength = array.GetLength(0);
+        int colLength = array.GetLength(1);
+
+        int row = 0, col = colLength - 1;//坐标右上角
+        while (row < rowLength && col >= 0)
+        {
+            if (array[row, col] == target)
+            {
+                result = true;
+                break;
+            }
+            else if (array[row, col] > target)
+            {
+                col--;
+            }
+            else
+            {
+                row++;
+            }
+        }
+    }
+
+    return result;
+}
+
+```
+
+</p>
+</details>  
+
 002.字符串替换空格
 > 请实现一个函数，将一个字符串中的每个空格替换成“%20”。例如，当字符串为We Are Happy.则经过替换之后的字符串为We%20Are%20Happy。
 >> 解题思路：移位：1. 遍历字符串，统计出空格数量；2. 再遍历一次，完成替换
+
+<details>
+<summary>部分核心代码实现</summary>
+<p>
+
+```c#
+/// <summary>
+/// 赋值给另外一个
+/// </summary>
+/// <param name="str"></param>
+/// <returns></returns>
+public static string ReplaceForBS(string str) {
+    StringBuilder sb = new StringBuilder();
+    foreach (var item in str) {
+        if (item == ' ')
+        {
+            sb.Append("%20");
+        }
+        else {
+            sb.Append(item);
+        }
+    }
+    return sb.ToString();
+}
+```
+
+</p>
+</details>  
 
 003.链表:从尾到头打印链表
 > 输入一个链表，按链表值从尾到头的顺序返回一个ArrayList。
 >> 解题思路：“先进后出”，也就是栈的功能。
 
+<details>
+<summary>部分核心代码实现</summary>
+<p>
+
+```c#
+/// <summary>
+/// 栈的方式实现
+/// </summary>
+/// <param name="nodes"></param>
+/// <returns></returns>
+public static List<int> PrintForStack(ListNode nodes)
+{
+    Stack<ListNode> listNodes = new Stack<ListNode>();
+    ListNode node = nodes;
+    while (node != null)
+    {
+        listNodes.Push(node);
+        node = node.next;
+    }
+
+    List<int> list = new List<int>();
+    foreach (var item in listNodes) {
+        list.Add(item.item);
+    }
+    return list;
+}
+```
+
+</p>
+</details>  
+
+
 004.树:重建二叉树
 > 输入某二叉树的前序遍历和中序遍历的结果，请重建出该二叉树。假设输入的前序遍历和中序遍历的结果中都不含重复的数字。例如输入前序遍历序列{1,2,4,7,3,5,6,8}和中序遍历序列{4,7,2,1,5,3,8,6}，则重建二叉树并返回。
 >> 解题思路：根据前序遍历，可以知道根节点（1），根据中序遍历可以知道左子树（4,7,2）和右子树（5,3,8,6）。递归：根>左>右。
+
+<details>
+<summary>部分核心代码实现</summary>
+<p>
+
+```c#
+public static TreeNode Tree(List<int> preTree, List<int> midTree)
+{
+    if (preTree == null || preTree.Count() == 0 || midTree == null || midTree.Count() == 0)
+    {
+        return null;
+    }
+
+    //根节点
+    int rootTree = preTree[0];
+    //移除根节点
+    preTree.RemoveAt(0);
+    TreeNode treeNode = new TreeNode(rootTree);
+
+    //左右子树
+    List<int> leftTree = null;
+    List<int> tempList = new List<int>();
+    bool isTree = false;
+    foreach (var item in midTree)
+    {
+        tempList.Add(item);
+        if (item == rootTree)
+        {
+            isTree = true;
+            tempList.Remove(item);
+            leftTree = tempList;
+
+            tempList = new List<int>();
+        }
+    }
+    if (!isTree) {
+        Console.WriteLine("不是正确的树");
+        return null;
+    }
+    List<int> rightTree = tempList;
+
+    //递归左右节点
+    treeNode.left = Tree(preTree, leftTree);
+    treeNode.right = Tree(preTree, rightTree);
+
+    return treeNode;
+}
+```
+
+</p>
+</details>  
+
 
 005.栈和队列:用两个栈实现队列
 > 用两个栈来实现一个队列，完成队列的Push和Pop操作。 队列中的元素为int类型。
 >> 解题思路：栈：先进后出，队列：先进先出
 
+<details>
+<summary>部分核心代码实现</summary>
+<p>
+
+```c#
+public class Coding005
+{
+    /// <summary>
+    /// 出栈
+    /// </summary>
+    private Stack<int> dequeue;
+    /// <summary>
+    /// 进栈
+    /// </summary>
+    private Stack<int> enqueue;
+
+    public Coding005()
+    {
+        dequeue = new Stack<int>();
+        enqueue = new Stack<int>();
+    }
+    /// <summary>
+    /// 出栈（优化）
+    /// </summary>
+    /// <returns></returns>
+    public int Dequeue2()
+    {
+        //没有数据
+        if (enqueue.Count == 0 && dequeue.Count == 0) {
+            return -1;
+        }
+
+        while (enqueue.Count > 1) {
+            var item = enqueue.Pop();
+            dequeue.Push(item);
+        }
+
+        if (enqueue.Count == 1)
+        {
+            return enqueue.Pop();
+        }
+        else {
+            return dequeue.Pop();
+        }
+    }
+
+    /// <summary>
+    /// 出栈
+    /// </summary>
+    /// <returns></returns>
+    public int Dequeue()
+    {
+        //没有数据
+        if (enqueue.Count == 0 && dequeue.Count == 0)
+        {
+            return -1;
+        }
+
+        while (enqueue.Count > 0)
+        {
+            var item = enqueue.Pop();
+            dequeue.Push(item);
+        }
+
+        return dequeue.Pop();
+    }
+
+    /// <summary>
+    /// 进栈
+    /// </summary>
+    /// <param name="item"></param>
+    public void Enqueue(int item)
+    {
+        enqueue.Push(item);
+    }
+
+}
+```
+
+</p>
+</details>  
+
 006.查找和排序:旋转数组的最小数字
 > 把一个数组最开始的若干个元素搬到数组的末尾，我们称之为数组的旋转。 输入一个非减排序的数组的一个旋转，输出旋转数组的最小元素。 例如数组{3,4,5,1,2}为{1,2,3,4,5}的一个旋转，该数组的最小值为1。 NOTE：给出的所有元素都大于0，若数组大小为0，请返回0。
 >> 解题思路：查找最小值，方法很多。
+
+<details>
+<summary>部分核心代码实现</summary>
+<p>
+
+```c#
+public static int MinForBinary(int[] data)
+{
+    if (data == null) return 0;
+
+    int left = 0;
+    int right = data.Length - 1;
+    var mid = 0;
+    while (left < right)
+    {
+        mid = (left + right) / 2;
+        if (data[mid] > data[right]) left = mid + 1;
+        else if (data[mid] < data[right]) right = mid;
+        else right = mid;
+    }
+
+    return data[left];
+}
+```
+
+</p>
+</details>  
 
 007.递归和循环:斐波那契数列
 > 大家都知道斐波那契数列，现在要求输入一个整数n，请你输出斐波那契数列的第n项（从0开始，第0项为0）。
 n<=39
 >> 解题思路：循环实现，不要动不动就递归
+<details>
+<summary>部分核心代码实现</summary>
+<p>
+
+```c#
+public static int Fibonacci2(int n)
+{
+    if (n <= 1) return n;
+
+    int first = 0;
+    int second = 1;
+    int result = 0;
+    for (int i = 2; i <= n; i++)
+    {
+        result = first + second;
+        first = second;
+        second = result;
+    }
+
+    return result;
+}
+```
+
+</p>
+</details>  
+
 
 008.递归和循环:跳台阶
 > 一只青蛙一次可以跳上1级台阶，也可以跳上2级。求该青蛙跳上一个n级的台阶总共有多少种跳法（先后次序不同算不同的结果）。
 >> 解题思路：：循环实现
 
+<details>
+<summary>部分核心代码实现</summary>
+<p>
+
+```c#
+public static int Jump(int n) {
+    if (n <= 2) {
+        return n;
+    }
+
+    int first = 1;
+    int second = 2;
+    int result = 0;
+    for (int i = 3; i <= n; i++) {
+        result = first + second;
+        first = second;
+        second = result;
+    }
+
+    return result;
+}
+```
+
+</p>
+</details>  
+
 009.递归和循环:变态跳台阶
 > 一只青蛙一次可以跳上1级台阶，也可以跳上2级……它也可以跳上n级。求该青蛙跳上一个n级的台阶总共有多少种跳法。
 >> 解题思路：循环实现
+
+<details>
+<summary>部分核心代码实现</summary>
+<p>
+
+```c#
+public static int Jump(int n) {
+    if (n <= 1) {
+        return n;
+    }
+
+    int first = 1;
+    int result = 0;
+    for (int i = 2; i <= n; i++) {
+        result = 2 * first;
+        first = result;
+    }
+
+    return result;
+}
+```
+
+</p>
+</details>  
 
 010.递归和循环:矩形覆盖
 > 我们可以用2*1的小矩形横着或者竖着去覆盖更大的矩形。请问用n个2*1的小矩形无重叠地覆盖一个2*n的大矩形，总共有多少种方法？
 >> 解题思路：循环实现
 
+<details>
+<summary>部分核心代码实现</summary>
+<p>
+
+```c#
+public static int Jump(int n) {
+    if (n <= 2) {
+        return n;
+    }
+
+    int first = 1;
+    int second = 2;
+    int result = 0;
+    for (int i = 3; i <= n; i++) {
+        result = first + second;
+        first = second;
+        second = result;
+    }
+
+    return result;
+}
+```
+
+</p>
+</details>  
+
 011.位运算:二进制中1的个数
 > 输入一个整数，输出该数二进制表示中1的个数。其中负数用补码表示。
 >> 解题思路：循环实现
+
+<details>
+<summary>部分核心代码实现</summary>
+<p>
+
+```c#
+public static int NumberOf1(int n) {
+    int count = 0;
+    while (n != 0) {
+        count++;
+        n = (n - 1) & n;
+    }
+    return count;
+}
+```
+
+</p>
+</details>
 
 012.代码的完整性:数值的整数次方
 > 给定一个double类型的浮点数base和int类型的整数exponent。求base的exponent次方。
 >> 解题思路：循环连乘，负数的绝对值处理之后倒数
 
+<details>
+<summary>部分核心代码实现</summary>
+<p>
+
+```c#
+public static double Pow(double baseData, int exponent)
+{
+    if (baseData == 0)
+    {
+        return 0;
+    }
+
+    bool isPositive = exponent > 0;//是否是正数
+    exponent = isPositive ? exponent : -exponent;
+    double result = 1;
+    for (int i = 0; i < exponent; i++)
+    {
+        result = result * baseData;
+    }
+    result = isPositive ? result : (1 / result);
+    return result;
+}
+```
+
+</p>
+</details>  
+
 013.代码的完整性:调整数组顺序使奇数位于偶数前面
 > 输入一个整数数组，实现一个函数来调整该数组中数字的顺序，使得所有的奇数位于数组的前半部分，所有的偶数位于数组的后半部分，并保证奇数和奇数，偶数和偶数之间的相对位置不变。
 >> 解题思路：考虑相对位置，利用第三个数组；不考略相对位置，奇数和偶数前后交换
+
+<details>
+<summary>部分核心代码实现</summary>
+<p>
+
+```c#
+public static int[] HandleArray(int[] array) {
+    if (array == null) return null;
+    int[] temp = new int[array.Length];
+    int i = 0;
+    //奇数
+    foreach (var t in array) {
+        if (t % 2 == 1) {
+            temp[i] = t;
+            i++;
+        }
+    }
+    //偶数
+    foreach (var t in array)
+    {
+        if (t % 2 == 0)
+        {
+            temp[i] = t;
+            i++;
+        }
+    }
+    return temp;
+}
+
+/// <summary>
+/// 不考略相对位置的
+/// </summary>
+/// <param name="array"></param>
+/// <returns></returns>
+public static int[] HandleArray2(int[] array)
+{
+    if (array == null) return null;
+
+    int left = 0;
+    int right = array.Length - 1;
+    while (left < right)
+    {
+        //奇数
+        while (array[left] % 2 == 1)
+        {
+            left++;
+        }
+
+        //偶数
+        while (left < right && array[right] % 2 == 0)
+        {
+            right--;
+        }
+
+        //交换
+        if (left < right)
+        {
+            var temp = array[left];
+            array[left] = array[right];
+            array[right] = temp;
+        }
+
+    }
+    return array;
+}
+```
+
+</p>
+</details>  
+
 
 014.代码的鲁棒性:链表中倒数第k个结点
 > 输入一个链表，输出该链表中倒数第k个结点。
 >> 解题思路：双指针法，两个指针相差k-1个节点
 
+<details>
+<summary>部分核心代码实现</summary>
+<p>
+
+```c#
+public static ListNode FindBackKth(ListNode node, int k) {
+    if (node == null || k <= 0) {
+        return null;
+    }
+
+    ListNode firstNode = node;
+    ListNode secondNode = node;
+    for (int i = 1; i <= k - 1; i++) {
+        firstNode = firstNode.next;
+        if (firstNode == null) {
+            return null;
+        }
+    }
+
+    while (firstNode.next != null) {
+        firstNode = firstNode.next;
+        secondNode = secondNode.next;
+    }
+
+    return secondNode;
+}
+```
+
+</p>
+</details>  
+
+
 015.代码的鲁棒性:反转链表
 > 输入一个链表，反转链表后，输出新链表的表头。
 >> 解题思路：三个指针，prev，cur，next，cur.next=prev
+
+<details>
+<summary>部分核心代码实现</summary>
+<p>
+
+```c#
+/// <summary>
+/// 栈的方式实现(倒过来的链表)
+/// </summary>
+/// <param name="nodes"></param>
+/// <returns></returns>
+public static ListNode PrintForReverse(ListNode nodes)
+{
+    if (nodes == null) return null; 
+    Stack<ListNode> listNodes = new Stack<ListNode>();
+    ListNode node = nodes;
+    while (node != null)
+    {
+        listNodes.Push(node);
+        node = node.next;
+    }
+
+    ListNode reverseNode = listNodes.Pop();
+    var temp = reverseNode;
+    foreach (var item in listNodes)
+    {
+        item.next = null;
+        temp.next = item;
+        temp = item;
+    }
+    return reverseNode;
+}
+
+public static ListNode PrintForReverse2(ListNode nodes) {
+    ListNode prev = null, node = nodes, next = null;
+    while (node != null)
+    {
+        next = node.next; //保存其下一个节点,相当于临时变量
+        node.next = prev; //指针指向反转
+
+        //后移下一轮操作
+        prev = node; //保存前一个指针
+        node = next; //递增指针, 指向下一个结点
+    }
+
+    return prev; //最后prev指针指向的那个节点就是原来的未指针，新的头指针
+}
+```
+
+</p>
+</details>  
+
 
 016.代码的鲁棒性:合并两个排序的链表
 > 输入两个单调递增的链表，输出两个链表合成后的链表，当然我们需要合成后的链表满足单调不减规则。
 >> 解题思路：创建一个新的链表，每次比较最小的插入链表中
 
+<details>
+<summary>部分核心代码实现</summary>
+<p>
+
+```c#
+public static ListNode Merge(ListNode node1, ListNode node2) {
+    if (node1 == null) return node2;
+    if (node2 == null) return node1;
+    ListNode newNode = null;
+
+    if (node1.item <= node2.item)
+    {
+        newNode = node1;
+        newNode.next = Merge(node1.next, node2);
+    }
+    else {
+        newNode = node2;
+        newNode.next = Merge(node1, node2.next);
+    }
+
+    return newNode;
+}
+```
+
+</p>
+</details>  
+
 017.代码的鲁棒性:树的子结构
 > 输入两棵二叉树A，B，判断B是不是A的子结构。（ps：我们约定空树不是任意一个树的子结构）
 >> 解题思路：1.查找根节点，2.比较左右节点，两个都是递归 
+
+<details>
+<summary>部分核心代码实现</summary>
+<p>
+
+```c#
+/// <summary>
+/// check 左右子树是否相同
+/// </summary>
+/// <param name="parent"></param>
+/// <param name="child"></param>
+/// <returns></returns>
+private static bool CheckLeftAndRightNode(TreeNode parent, TreeNode child)
+{
+    if (child == null) return true; //子树为NULL，那么必然是子树
+    if (parent == null) return false; //子树不是空，父树为空
+
+    if (child.val != parent.val)
+    {
+        return false;
+    }
+    else {
+        return CheckLeftAndRightNode(parent.left, child.left) & CheckLeftAndRightNode(parent.right, child.right);
+    }
+}
+
+/// <summary>
+/// 查找子树
+/// </summary>
+/// <param name="parent"></param>
+/// <param name="child"></param>
+/// <returns></returns>
+public static bool HasSubTree(TreeNode parent, TreeNode child)
+{
+    if (parent == null || child == null) return false;
+    bool result = false;
+    if (parent.val == child.val)
+    {
+        result = CheckLeftAndRightNode(parent, child);
+    }
+
+    if (!result)
+    {
+        result = HasSubTree(parent.left, child) || HasSubTree(parent.right, child);
+    }
+    return result;
+}
+```
+
+</p>
+</details>  
+
 
 018.面试思路:二叉树的镜像
 > 操作给定的二叉树，将其变换为源二叉树的镜像。
 >> 解题思路：镜像：对称。左右节点交换，递归
 
+<details>
+<summary>部分核心代码实现</summary>
+<p>
+
+```c#
+public static void Mirror(TreeNode node) {
+    if (node==null) return;
+
+    var temp = node.left;
+    node.left = node.right;
+    node.right = temp;
+
+    Mirror(node.left);
+    Mirror(node.right);
+}
+```
+
+</p>
+</details>  
+
 019.画图让抽象形象化:顺时针打印矩阵
 > 输入一个矩阵，按照从外向里以顺时针的顺序依次打印出每一个数字，例如，如果输入如下4 X 4矩阵： 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 则依次打印出数字1,2,3,4,8,12,16,15,14,13,9,5,6,7,11,10.
 >> 解题思路： 从左到右，从上到下，从右到左，从下到上，循环处理
 
+<details>
+<summary>部分核心代码实现</summary>
+<p>
+
+```c#
+public static List<int> HandleArray(int[,] array)
+{
+    List<int> data = new List<int>();
+    if (array == null) return data;
+    int row = array.GetLength(0);
+    int col = array.GetLength(1);
+    if (row == 0 || col == 0) return data;
+    int left = 0, right = col - 1, top = 0, bottom = row - 1;
+    while (left <= right && bottom >= top)
+    {
+        //从左到右
+        for (int i = left; i <= right; i++)
+        {
+            data.Add(array[top, i]); //行不变列变
+        }
+        top++;
+
+        //从上到下
+        if (bottom >= top)
+        {
+            for (int i = top; i <= bottom; i++)
+            {
+                data.Add(array[i, right]); //行变列不变
+            }
+            right--;
+        }
+
+        //从右到左
+        if (right >= left && bottom >= top)
+        {
+            for (int i = right; i >= left; i--)
+            {
+                data.Add(array[bottom, i]); //列变行不变
+            }
+            bottom--;
+        }
+
+        //从下到上
+        if (right >= left && bottom >= top)
+        {
+            for (int i = bottom; i >= top; i--)
+            {
+                data.Add(array[i, left]);//行变列不变
+            }
+            left++;
+        }
+    }
+
+    return data;
+}
+```
+
+</p>
+</details>  
+
 020.举例让抽象具体化:包含min函数的栈
 > 定义栈的数据结构，请在该类型中实现一个能够得到栈中所含最小元素的min函数（时间复杂度应为O（1））。
 >> 解题思路：两个栈的操作，一个保存数据，一个保存最小值
+
+<details>
+<summary>部分核心代码实现</summary>
+<p>
+
+```c#
+public class MinInStack
+{
+    public Stack<int> dataStack;
+    public Stack<int> minStack;
+
+    public MinInStack()
+    {
+        dataStack = new Stack<int>();
+        minStack = new Stack<int>();
+    }
+
+    public int Pop()
+    {
+        if (dataStack.Count == 0) return -1;
+        minStack.Pop();
+        return dataStack.Pop();
+    }
+
+    public void Push(int item)
+    {
+        dataStack.Push(item);
+        if (!minStack.TryPeek(out int data) || data > item) //每次放进去的都是最小值
+        {
+            minStack.Push(item);
+        }
+        else
+        {
+            minStack.Push(data);
+        }
+    }
+
+    public int Min()
+    {
+        if (dataStack.Count == 0) return -1;
+
+        return minStack.Peek();
+    }
+}
+```
+
+</p>
+</details>  
+
 
 021. 举例让抽象具体化：栈的压入、弹出序列
 > 输入两个整数序列，第一个序列表示栈的压入顺序，请判断第二个序列是否可能为该栈的弹出顺序。假设压入栈的所有数字均不相等。例如序列1,2,3,4,5是某栈的压入顺序，序列4,5,3,2,1是该压栈序列对应的一个弹出序列，但4,3,5,1,2就不可能是该压栈序列的弹出序列。（注意：这两个序列的长度是相等的）
