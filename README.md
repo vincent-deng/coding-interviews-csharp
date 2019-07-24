@@ -863,15 +863,106 @@ public class MinInStack
 
 021. 举例让抽象具体化：栈的压入、弹出序列
 > 输入两个整数序列，第一个序列表示栈的压入顺序，请判断第二个序列是否可能为该栈的弹出顺序。假设压入栈的所有数字均不相等。例如序列1,2,3,4,5是某栈的压入顺序，序列4,5,3,2,1是该压栈序列对应的一个弹出序列，但4,3,5,1,2就不可能是该压栈序列的弹出序列。（注意：这两个序列的长度是相等的）
->> 解题思路：
+>> 解题思路：弹出的肯定是栈的最顶层，借助辅助栈操作
+
+<details>
+<summary>部分核心代码实现</summary>
+<p>
+
+```c#
+public static bool IsPopOrder(int[] pushOrder, int[] popOrder)
+{
+    bool possible = false;
+    if (pushOrder != null && popOrder != null && pushOrder.Count() == popOrder.Count())
+    {
+        int nextPush = 0; // 指向下一个要push的元素的index
+        int nextPop = 0;  // 指向下一个要pop的元素的index
+        int length = pushOrder.Count();
+        Stack<int> stackData = new Stack<int>();
+
+        while (nextPush < length)
+        {
+            // 当辅助栈的栈顶元素不是要弹出的元素,先压入一些数字入栈
+            while (stackData.Count == 0 || stackData.Peek() != popOrder[nextPop])
+            {
+                // 如果所有数字都压入辅助栈了，退出循环
+                if (nextPush == (length - 1))
+                {
+                    break;
+                }
+
+                stackData.Push(pushOrder[nextPush]);
+                nextPush++;
+            }
+
+            // 说明没有匹配成功
+            if (stackData.Peek() != popOrder[nextPop])
+            {
+                break;
+            }
+
+            stackData.Pop();
+            nextPop++;
+        }
+
+        if (stackData.Count == 0)
+        {
+            possible = true;
+        }
+    }
+
+    return possible;
+}
+```
+
+</p>
+</details>  
+
 
 022. 从上往下打印二叉树
 > 从上往下打印出二叉树的每个节点，同层节点从左至右打印。
 >> 解题思路：利用队列，先进先出
 
+<details>
+<summary>部分核心代码实现</summary>
+<p>
+
+```c#
+static void PrintFromTopToBottom(TreeNode root,List<int> data)
+{
+    if (root == null)
+    {
+        return;
+    }
+
+    Queue<TreeNode> queue = new Queue<TreeNode>();
+    queue.Enqueue(root);
+
+    while (queue.Count > 0)
+    {
+        TreeNode printNode = queue.Dequeue();
+        data.Add(printNode.val);
+
+        if (printNode.left != null)
+        {
+            queue.Enqueue(printNode.left);
+        }
+
+        if (printNode.right != null)
+        {
+            queue.Enqueue(printNode.right);
+        }
+    }
+}
+```
+
+</p>
+</details>  
+
+
 023. 二叉搜索树的后序遍历序列
 > 输入一个整数数组，判断该数组是不是某二叉搜索树的后序遍历的结果。如果是则输出Yes,否则输出No。假设输入的数组的任意两个数字都互不相同。
->> 解题思路：Step1.通过取出序列最后一个元素得到二叉搜索树的根节点；Step2.在二叉搜索树中左子树的结点小于根结点，因此可以遍历一次得到左子树；Step3.在二叉搜索树中右子树的结点大于根结点，因此可以继续遍历后序元素得到右子树；Step4.重复以上步骤递归判断左右子树是不是二叉搜索树，如果都是，则返回true，如果不是，则返回false;
+>> 解题思路：二叉搜索树是左边小于根，右边大于根节点， Step1.通过取出序列最后一个元素得到二叉搜索树的根节点；Step2.在二叉搜索树中左子树的结点小于根结点，因此可以遍历一次得到左子树；Step3.在二叉搜索树中右子树的结点大于根结点，因此可以继续遍历后序元素得到右子树；Step4.重复以上步骤递归判断左右子树是不是二叉搜索树，如果都是，则返回true，如果不是，则返回false;
 
 024. 二叉树中和为某一值的路径
 > 输入一颗二叉树的跟节点和一个整数，打印出二叉树中结点值的和为输入整数的所有路径。路径定义为从树的根结点开始往下一直到叶结点所经过的结点形成一条路径。(注意: 在返回值的list中，数组长度大的数组靠前)
