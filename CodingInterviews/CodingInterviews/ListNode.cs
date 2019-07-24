@@ -11,6 +11,7 @@ namespace CodingInterviews
     {
         public int item;
         public ListNode next;
+        public ListNode random;
         public ListNode(int x)
         {
             item = x;
