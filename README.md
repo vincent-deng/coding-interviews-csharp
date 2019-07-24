@@ -964,29 +964,297 @@ static void PrintFromTopToBottom(TreeNode root,List<int> data)
 > 输入一个整数数组，判断该数组是不是某二叉搜索树的后序遍历的结果。如果是则输出Yes,否则输出No。假设输入的数组的任意两个数字都互不相同。
 >> 解题思路：二叉搜索树是左边小于根，右边大于根节点， Step1.通过取出序列最后一个元素得到二叉搜索树的根节点；Step2.在二叉搜索树中左子树的结点小于根结点，因此可以遍历一次得到左子树；Step3.在二叉搜索树中右子树的结点大于根结点，因此可以继续遍历后序元素得到右子树；Step4.重复以上步骤递归判断左右子树是不是二叉搜索树，如果都是，则返回true，如果不是，则返回false;
 
+<details>
+<summary>部分核心代码实现</summary>
+<p>
+
+```c#
+public static bool VerifySquenceOfBST(int[] sequence, int length)
+{
+    if (sequence == null || length <= 0)
+    {
+        return false;
+    }
+
+    int root = sequence[length - 1];
+
+    // 在二叉搜索树中左子树的结点小于根结点
+    int i = 0;
+    for (; i < length - 1; i++)
+    {
+        if (sequence[i] > root)
+        {
+            break;
+        }
+    }
+
+    // 在二叉搜索树中右子树的结点大于根结点
+    int j = i;
+    for (; j < length - 1; j++)
+    {
+        if (sequence[j] < root)
+        {
+            // 如果找到小于根节点直接返回false
+            return false;
+        }
+    }
+
+    // 判断左子树是不是二叉搜索树
+    bool leftIsBST = true;
+    if (i > 0)
+    {
+        leftIsBST = VerifySquenceOfBST(sequence, i);
+    }
+
+    // 判断右子树是不是二叉搜索树
+    bool rightIsBST = true;
+    if (j < length - 1)
+    {
+        // C#中无法直接操作指针，在C/C++可以直接传递sequence+i
+        int[] newSequence = sequence.Skip(i).ToArray();
+        rightIsBST = VerifySquenceOfBST(newSequence, length - i - 1);
+    }
+
+    return leftIsBST && rightIsBST;
+}
+```
+
+</p>
+</details>  
+
+
 024. 二叉树中和为某一值的路径
 > 输入一颗二叉树的跟节点和一个整数，打印出二叉树中结点值的和为输入整数的所有路径。路径定义为从树的根结点开始往下一直到叶结点所经过的结点形成一条路径。(注意: 在返回值的list中，数组长度大的数组靠前)
 >> 解题思路：画图找出规律，通过递归计算出。
+
+<details>
+<summary>部分核心代码实现</summary>
+<p>
+
+```c#
+public static void FindPath(TreeNode root, int expectedSum)
+{
+    if (root == null)
+    {
+        return;
+    }
+
+    int currentSum = 0;
+    List<int> path = new List<int>();
+    FindPath(root, expectedSum, path, ref currentSum);
+}
+
+private static void FindPath(TreeNode root, int expectedSum, List<int> path, ref int currentSum)
+{
+    currentSum += root.val;
+    path.Add(root.val);
+    // 如果是叶结点，并且路径上结点的和等于输入的值
+    // 打印出这条路径
+    bool isLeaf = root.left == null && root.right == null;
+    if (isLeaf && currentSum == expectedSum)
+    {
+        foreach (int data in path)
+        {
+            Console.Write("{0}\t", data);
+        }
+        Console.WriteLine();
+    }
+
+    // 如果不是叶结点，则遍历它的子结点
+    if (root.left != null)
+    {
+        FindPath(root.left, expectedSum, path, ref currentSum);
+    }
+
+    if (root.right != null)
+    {
+        FindPath(root.right, expectedSum, path, ref currentSum);
+    }
+
+    // 在返回到父结点之前，在路径上删除当前结点，
+    // 并在currentSum中减去当前结点的值
+    path.Remove(root.val);
+    currentSum -= root.val;
+}
+```
+
+</p>
+</details>  
+
 
 025. 复杂链表的复制
 > 输入一个复杂链表（每个节点中有节点值，以及两个指针，一个指向下一个节点，另一个特殊指针指向任意一个节点），返回结果为复制后复杂链表的head。（注意，输出结果中请不要返回参数中的节点引用，否则判题程序会直接返回空）
 >> 解题思路：利用辅助字典，1.先把链表通过next链接，2.通过字典找到复杂的关联
 
+<details>
+<summary>部分核心代码实现</summary>
+<p>
+
+```c#
+public ListNode Clone(ListNode pHead)
+{
+    if (pHead == null)
+    {
+        return null;
+    }
+    Dictionary<ListNode, ListNode> nodeMap =new Dictionary<ListNode, ListNode>();
+
+    ListNode currNode = pHead;
+    ListNode newHead = null, preNode = null, newNode = null;
+
+    ///  首先复制原链表的普通指针域, 一次遍历即可完成
+    while (currNode != null)
+    {
+        newNode = new ListNode(currNode.item);
+        nodeMap.Add(currNode, newNode);
+        currNode = currNode.next;
+
+        if (preNode == null)
+        {
+            newHead = newNode;
+        }
+        else
+        {
+            preNode.next = newNode;
+        }
+
+        preNode = newNode;
+    }
+
+    //  接着复制随机指针域, 需要两次遍历
+    currNode = pHead;
+    newNode = newHead;
+    while (currNode != null && newNode != null)
+    {
+        ListNode randNode = currNode.random; ///随机指针域randNode
+        ListNode newRandNode = nodeMap[randNode];
+        newNode.random = newRandNode;
+
+        ///  链表同步移动
+        currNode = currNode.next;
+        newNode = newNode.next;
+    }
+
+    return newHead;
+}
+```
+
+</p>
+</details>  
+
+
 026. 二叉搜索树与双向链表
 > 输入一棵二叉搜索树，将该二叉搜索树转换成一个排序的双向链表。要求不能创建任何新的结点，只能调整树中结点指针的指向。
 >> 解题思路：中序遍历，递归
+
+<details>
+<summary>部分核心代码实现</summary>
+<p>
+
+```c#
+public TreeNode Convert(TreeNode root)
+{
+    TreeNode lastNodeInList = null;
+    ConvertNode(root, ref lastNodeInList);
+
+    // lastNodeInList指向双向链表的尾结点，
+    // 我们需要返回头结点
+    TreeNode headInList = lastNodeInList;
+    while (headInList != null && headInList.left != null)
+    {
+        headInList = headInList.left;
+    }
+
+    return headInList;
+}
+
+private void ConvertNode(TreeNode node, ref TreeNode lastNodeInList)
+{
+    if (node == null)
+    {
+        return;
+    }
+
+    TreeNode currentNode = node;
+    // 转换左子树
+    if (currentNode.left != null)
+    {
+        ConvertNode(currentNode.left, ref lastNodeInList);
+    }
+    // 与根节点的衔接
+    currentNode.left = lastNodeInList;
+    if (lastNodeInList != null)
+    {
+        lastNodeInList.right = currentNode;
+    }
+    lastNodeInList = currentNode;
+    // 转换右子树
+    if (currentNode.right != null)
+    {
+        ConvertNode(currentNode.right, ref lastNodeInList);
+    }
+}
+```
+
+</p>
+</details>  
+
 
 027. 字符串的排列
 > 输入一个字符串,按字典序打印出该字符串中字符的所有排列。例如输入字符串abc,则打印出由字符a,b,c所能排列出来的所有字符串abc,acb,bac,bca,cab和cba。
 >> 解题思路：递归逐步替换
 
+<details>
+<summary>部分核心代码实现</summary>
+<p>
+
+```c#
+public static List<string> Permutation(string str)
+{
+    if (str == null)
+    {
+        return null;
+    }
+
+    var c = str.ToCharArray();
+    List<string> data = new List<string>();
+    Permutation(c, c, 0, data);
+    return data;
+}
+
+public static void Permutation(char[] str, char[] begin, int startIndex, List<string> data)
+{
+    if (startIndex == str.Length)
+    {
+        data.Add(new string(str));
+    }
+    else
+    {
+        for (int i = startIndex; i < str.Length; i++)
+        {
+            //交换
+            char temp = begin[i];
+            begin[i] = begin[startIndex];
+            begin[startIndex] = temp;
+
+            Permutation(str, begin, startIndex + 1, data);
+
+            //还原
+            temp = begin[i];
+            begin[i] = begin[startIndex];
+            begin[startIndex] = temp;
+        }
+    }
+}
+```
+
+</p>
+</details>  
+
+
 028. 数组中出现次数超过一半的数字
 > 数组中有一个数字出现的次数超过数组长度的一半，请找出这个数字。例如输入一个长度为9的数组{1,2,3,2,2,2,5,4,2}。由于数字2在数组中出现了5次，超过数组长度的一半，因此输出2。如果不存在则输出0。
->> 解题思路：
-
-029. 数组中出现次数超过一半的数字
-> 数组中有一个数字出现的次数超过数组长度的一半，请找出这个数字。例如输入一个长度为9的数组{1,2,3,2,2,2,5,4,2}。由于数字2在数组中出现了5次，超过数组长度的一半，因此输出2。如果不存在则输出0。
->> 解题思路：字典k大的数据
+>> 解题思路：字典操作，或者排序除以2
 
 030. 最小的K个数
 > 输入n个整数，找出其中最小的K个数。例如输入4,5,1,6,2,7,3,8这8个数字，则最小的4个数字是1,2,3,4,。
@@ -995,6 +1263,45 @@ static void PrintFromTopToBottom(TreeNode root,List<int> data)
 031. 连续子数组的最大和
 > 入一个整型数组，数组里有正数也有负数。数组中一个或连续的多个整数组成一个子数组。求所有子数组的和的最大值。要求时间复杂度为O(n)。例如输入的数组为{1,-2,3,10,-4,7,2,-5}，和最大的子数组为{3,10,-4,7,2}，因此输出为该子数组的和18。
 >> 解题思路：循环累加，用一个临时变量保存累加的结果，如果累加的结构小于0，从下一个数字重新开始累加，如果累加的数据大于当前累加的和，则更新累加的结果。
+
+<details>
+<summary>部分核心代码实现</summary>
+<p>
+
+```c#
+public static int FindGreatestSumOfSubArray(int[] array)
+{
+    if (array == null || array.Length <= 0)
+    {
+        return 0;
+    }
+
+    int currSum = 0;
+    int greatestSum = int.MinValue;
+
+    for (int i = 0; i < array.Length; i++)
+    {
+        if (currSum <= 0)
+        {
+            currSum = array[i];
+        }
+        else
+        {
+            currSum += array[i];
+        }
+
+        if (currSum > greatestSum)
+        {
+            greatestSum = currSum;
+        }
+    }
+
+    return greatestSum;
+}
+```
+
+</p>
+</details>  
 
 032. 整数中1出现的次数（从1到n整数中1出现的次数）
 > 求出1~13的整数中1出现的次数,并算出100~1300的整数中1出现的次数？为此他特别数了一下1~13中包含1的数字有1、10、11、12、13因此共出现6次,但是对于后面问题他就没辙了。ACMer希望你们帮帮他,并把问题更加普遍化,可以很快的求出任意非负整数区间中1出现的次数（从1 到 n 中1出现的次数）。
