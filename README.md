@@ -1317,9 +1317,92 @@ else
 > 输入一个正整数数组，把数组里所有数字拼接起来排成一个数，打印能拼接出的所有数字中最小的一个。例如输入数组{3，32，321}，则打印出这三个数字能排成的最小数字为321323。
 >> 解题思路:转换成字符串排序。
 
+<details>
+<summary>部分核心代码实现</summary>
+<p>
+
+```c#
+public static string PrintMinNumber(int[] numbers)
+{
+    string result = "";
+    ///将整数转换成字符串
+    List<string> strNum = numbers.Select(x => x.ToString()).ToList();
+    strNum.Sort();
+    strNum.ForEach(x => result = result + x);
+    return result;
+}
+```
+
+</p>
+</details>  
+
+
 034. 丑数
 > 把只包含质因子2、3和5的数称作丑数（Ugly Number）。例如6、8都是丑数，但14不是，因为它包含质因子7。 习惯上我们把1当做是第一个丑数。求按从小到大的顺序的第N个丑数。
 >> 解题思路:丑数：把只包含因子2、3和5的数称作丑数（Ugly Number）。1.每次取最小的丑数，2.移动相应的计算丑数索引
+
+<details>
+<summary>部分核心代码实现</summary>
+<p>
+
+```c#
+public int GetUglyNumber(int index)
+{
+    if (index <= 0)
+    {
+        return 0;
+    }
+
+    int[] uglyNumbers = new int[index];
+    uglyNumbers[0] = 1;
+    int nextUglyIndex = 1;
+
+    int multiply2 = 0;
+    int multiply3 = 0;
+    int multiply5 = 0;
+    int min = 0;
+
+    while (nextUglyIndex < index)
+    {
+        min = Min(uglyNumbers[multiply2] * 2, uglyNumbers[multiply3] * 3, uglyNumbers[multiply5] * 5);
+        uglyNumbers[nextUglyIndex] = min;
+
+        while (uglyNumbers[multiply2] * 2 <= uglyNumbers[nextUglyIndex])
+        {
+            multiply2++;
+        }
+
+        while (uglyNumbers[multiply3] * 3 <= uglyNumbers[nextUglyIndex])
+        {
+            multiply3++;
+        }
+
+        while (uglyNumbers[multiply5] * 5 <= uglyNumbers[nextUglyIndex])
+        {
+            multiply5++;
+        }
+
+        nextUglyIndex++;
+    }
+
+    int result = uglyNumbers[index - 1];
+    uglyNumbers = null;
+
+    return result;
+}
+
+private int Min(int num1, int num2, int num3)
+{
+    int min = num1 < num2 ? num1 : num2;
+    min = min < num3 ? min : num3;
+
+    return min;
+}
+```
+
+</p>
+</details>  
+
 
 035. 	第一个只出现一次的字符位置
 > 在一个字符串(0<=字符串长度<=10000，全部由字母组成)中找到第一个只出现一次的字符,并返回它的位置, 如果没有则返回 -1（需要区分大小写）.
@@ -1347,7 +1430,7 @@ else
 
 041. 数组中只出现一次的数字
 > 一个整型数组里除了两个数字之外，其他的数字都出现了两次。请写程序找出这两个只出现一次的数字。
->> 解题思路:
+>> 解题思路:利用字典，两次扫描
 
 042. 	和为S的连续正数序列
 > 小明很喜欢数学,有一天他在做数学作业时,要求计算出9~16的和,他马上就写出了正确答案是100。但是他并不满足于此,他在想究竟有多少种连续的正数序列的和为100(至少包括两个数)。没多久,他就得到另一组连续正数和为100的序列:18,19,20,21,22。现在把问题交给你,你能不能也很快的找出所有和为S的连续正数序列? Good Luck!
