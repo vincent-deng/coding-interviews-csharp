@@ -1434,15 +1434,56 @@ private int Min(int num1, int num2, int num3)
 
 042. 	和为S的连续正数序列
 > 小明很喜欢数学,有一天他在做数学作业时,要求计算出9~16的和,他马上就写出了正确答案是100。但是他并不满足于此,他在想究竟有多少种连续的正数序列的和为100(至少包括两个数)。没多久,他就得到另一组连续正数和为100的序列:18,19,20,21,22。现在把问题交给你,你能不能也很快的找出所有和为S的连续正数序列? Good Luck!
->> 解题思路:
+>> 解题思路:两个索引移位操作
+
+<details>
+<summary>部分核心代码实现</summary>
+<p>
+
+```c#
+public static List<string> FindContinuousSequence(int sum)
+{
+    List<string> list = new List<string>();
+    int begin = 1;
+    int end = 2;
+    int mid = (sum + 1) >> 1;
+    int curSum = begin + end;
+
+    while (begin < end && end <= mid)
+    {
+        if (curSum == sum)
+        {
+            list.Add($"{begin} - {end}");
+        }
+
+        if (curSum > sum) //当前值大于sum，缩小范围
+        {
+            curSum -= begin;
+            begin++;
+        }
+        else //前值小于sum，增大范围
+        {
+
+            end++;
+            curSum += end;
+        }
+
+    }
+    return list;
+}
+```
+
+</p>
+</details>  
+
 
 043. 和为S的两个数字
 > 输入一个递增排序的数组和一个数字S，在数组中查找两个数，使得他们的和正好是S，如果有多对数字的和等于S，输出两个数的乘积最小的。
->> 解题思路:
+>> 解题思路: 同上042解题思路，两个变量移动求和，保存数据。
 
 044. 左旋转字符串
 > 汇编语言中有一种移位指令叫做循环左移（ROL），现在有个简单的任务，就是用字符串模拟这个指令的运算结果。对于一个给定的字符序列S，请你把其循环左移K位后的序列输出。例如，字符序列S=”abcXYZdef”,要求输出循环左移3位后的结果，即“XYZdefabc”。是不是很简单？OK，搞定它！
->> 解题思路:
+>> 解题思路:旋转数组的方法，每次后移。
 
 045. 翻转单词顺序列
 > 牛客最近来了一个新员工Fish，每天早晨总是会拿着一本英文杂志，写些句子在本子上。同事Cat对Fish写的内容颇感兴趣，有一天他向Fish借来翻看，但却读不懂它的意思。例如，“student. a am I”。后来才意识到，这家伙原来把句子单词的顺序翻转了，正确的句子应该是“I am a student.”。Cat对一一的翻转这些单词顺序可不在行，你能帮助他么？
