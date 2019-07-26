@@ -1,4 +1,10 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace CodingInterviews
 {
@@ -6,7 +12,8 @@ namespace CodingInterviews
     {
         static void Main(string[] args)
         {
-            Coding001.Test();
+            string data = "测试数据";
+
             Console.WriteLine("结束");
             Console.Read();
         }
